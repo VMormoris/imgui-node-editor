@@ -27,6 +27,9 @@
 //#pragma comment(lib, "Xinput9_1_0")
 #endif
 
+#include <dwmapi.h>
+#include <windowsx.h>
+
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
 //  2020-03-03: Inputs: Calling AddInputCharacterUTF16() to support surrogate pairs leading to codepoint >= 0x10000 (for more complete CJK inputs)
@@ -352,6 +355,136 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARA
         for (int n = 0; n < IM_ARRAYSIZE(io.KeysDown); n++)
             io.KeysDown[n] = false;
         break;
+    case WM_ACTIVATE:
+    {
+        RECT title_bar_rect = { 0 };
+        InvalidateRect(hwnd, &title_bar_rect, FALSE);
+
+        // Extend the frame into the client area.
+        MARGINS margins = { 0 };
+
+        //auto hr = DwmExtendFrameIntoClientArea(hwnd, &margins);
+        //assert(SUCCEEDED(hr) == TRUE);
+        return 0;
+    }
+    case WM_NCCREATE:
+    {
+        RECT size_rect;
+        GetWindowRect(hwnd, &size_rect);
+
+        // Inform the application of the frame change to force redrawing with the new
+        // client area that is extended into the title bar
+        SetWindowPos(
+            hwnd, NULL,
+            size_rect.left, size_rect.top,
+            size_rect.right - size_rect.left, size_rect.bottom - size_rect.top,
+            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+        );
+        return 0;
+    }
+    case WM_NCCALCSIZE:
+    {
+        // For custom frames
+
+        // Shrink client area by border thickness so we can
+        // resize window and see borders
+        const int resizeBorderX = GetSystemMetrics(SM_CXFRAME);
+        const int resizeBorderY = GetSystemMetrics(SM_CYFRAME);
+
+        NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
+        RECT* requestedClientRect = params->rgrc;
+
+        requestedClientRect->right -= resizeBorderX;
+        requestedClientRect->left += resizeBorderX;
+        requestedClientRect->bottom -= resizeBorderY;
+
+        //
+        // NOTE(Yan):
+        // 
+        // Top borders seem to be handled differently.
+        // 
+        // Contracting by 1 on Win 11 seems to give a small area
+        // for resizing whilst not showing a white border.
+        // 
+        // But this doesn't seem to work on Win 10, instead showing
+        // a general white titlebar on top of the custom one...
+        // to be continued.
+        // 
+        // Not changing the top (i.e. 0) means we don't see the
+        // mouse icon change to a resize handle, but resizing still
+        // works once you click and drag. This works on both
+        // Windows 10 & 11, so we'll keep that for now.
+        requestedClientRect->top += 0;
+
+        // NOTE(Yan): seems to make no difference what we return here,
+        //            was originally 0
+        return WVR_ALIGNTOP | WVR_ALIGNLEFT;
+    }
+    case WM_SIZE:
+    {
+        RECT size_rect;
+        GetWindowRect(hwnd, &size_rect);
+
+        // Inform the application of the frame change to force redrawing with the new
+        // client area that is extended into the title bar
+        SetWindowPos(
+            hwnd, NULL,
+            size_rect.left, size_rect.top,
+            size_rect.right - size_rect.left, size_rect.bottom - size_rect.top,
+            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+        );
+        return 0;
+    }
+    case WM_NCHITTEST:
+    {
+        static RECT border_thickness = { 4, 4, 4, 4 };
+        //
+        // Hit test for custom frames
+        //
+        POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+        ScreenToClient(hwnd, &pt);
+        WINDOWPLACEMENT wndpl = {0};
+        const bool maximized = GetWindowPlacement(hwnd, &wndpl) && wndpl.showCmd == SW_MAXIMIZE;
+
+        // Check borders first
+        if (!maximized)
+        {
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+
+            const int verticalBorderSize = GetSystemMetrics(SM_CYFRAME);
+
+            enum { left = 1, top = 2, right = 4, bottom = 8 };
+            int hit = 0;
+            if (pt.x <= border_thickness.left)
+                hit |= left;
+            if (pt.x >= rc.right - border_thickness.right)
+                hit |= right;
+            if (pt.y <= border_thickness.top || pt.y < verticalBorderSize)
+                hit |= top;
+            if (pt.y >= rc.bottom - border_thickness.bottom)
+                hit |= bottom;
+
+            if (hit & top && hit & left)        return HTTOPLEFT;
+            if (hit & top && hit & right)       return HTTOPRIGHT;
+            if (hit & bottom && hit & left)     return HTBOTTOMLEFT;
+            if (hit & bottom && hit & right)    return HTBOTTOMRIGHT;
+            if (hit & left)                     return HTLEFT;
+            if (hit & top)                      return HTTOP;
+            if (hit & right)                    return HTRIGHT;
+            if (hit & bottom)                   return HTBOTTOM;
+        }
+
+        // Then do client-side test which should determine titlebar bounds
+        int titlebarHittest = 0;
+        if (pt.y <= 32)
+            return HTCAPTION;
+
+        // In client area
+        return HTCLIENT;
+
+        return 0;
+    }
     }
     return 0;
 }

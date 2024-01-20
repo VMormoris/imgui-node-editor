@@ -27,6 +27,7 @@ struct PlatformGLFW final
     void ApplicationStop() override;
     bool OpenMainWindow(const char* title, int width, int height) override;
     bool CloseMainWindow() override;
+    void* GetPlatformAgnosticWindowHandle() const override { return m_Window; }
     void* GetMainWindowHandle() const override;
     void SetMainWindowTitle(const char* title) override;
     void ShowMainWindow() override;

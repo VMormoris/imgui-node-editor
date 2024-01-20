@@ -40,14 +40,18 @@ struct Application
 
     virtual bool CanClose() { return true; }
 
+protected:
+
+    std::unique_ptr<Platform>   m_Platform;
+
 private:
+    
     void RecreateFontAtlas();
 
     void Frame();
 
     std::string                 m_Name;
     std::string                 m_IniFilename;
-    std::unique_ptr<Platform>   m_Platform;
     std::unique_ptr<Renderer>   m_Renderer;
     ImGuiContext*               m_Context = nullptr;
     ImFont*                     m_DefaultFont = nullptr;

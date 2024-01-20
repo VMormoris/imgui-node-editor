@@ -14,6 +14,7 @@ struct Platform
 
     virtual bool OpenMainWindow(const char* title, int width, int height) = 0;
     virtual bool CloseMainWindow() = 0;
+    virtual void* GetPlatformAgnosticWindowHandle() const = 0;
     virtual void* GetMainWindowHandle() const = 0;
     virtual void SetMainWindowTitle(const char* title) = 0;
     virtual void ShowMainWindow() = 0;

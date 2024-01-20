@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\application">
+      <UniqueIdentifier>{67A28982-5331-134C-FC4F-2747E8BD23F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\application\source">
+      <UniqueIdentifier>{A72AE91B-1338-1702-9C1E-13ED082BE3B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\blueprints-example">
+      <UniqueIdentifier>{141D8F7A-802A-BD60-0911-B94B751D8917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\blueprints-example\utilities">
+      <UniqueIdentifier>{9FCAF7C3-0B8F-F6B3-D4F4-267E407892E9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="crude_json.h" />
+    <ClInclude Include="examples\blueprints-example\utilities\builders.h">
+      <Filter>examples\blueprints-example\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\blueprints-example\utilities\drawing.h">
+      <Filter>examples\blueprints-example\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\blueprints-example\utilities\widgets.h">
+      <Filter>examples\blueprints-example\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_bezier_math.h" />
+    <ClInclude Include="imgui_bezier_math.inl" />
+    <ClInclude Include="imgui_canvas.h" />
+    <ClInclude Include="imgui_extra_math.h" />
+    <ClInclude Include="imgui_extra_math.inl" />
+    <ClInclude Include="imgui_node_editor.h" />
+    <ClInclude Include="imgui_node_editor_internal.h" />
+    <ClInclude Include="imgui_node_editor_internal.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="crude_json.cpp" />
+    <ClCompile Include="examples\application\source\application.cpp">
+      <Filter>examples\application\source</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\application\source\entry_point.cpp">
+      <Filter>examples\application\source</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blueprints-example\utilities\builders.cpp">
+      <Filter>examples\blueprints-example\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blueprints-example\utilities\drawing.cpp">
+      <Filter>examples\blueprints-example\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blueprints-example\utilities\widgets.cpp">
+      <Filter>examples\blueprints-example\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_canvas.cpp" />
+    <ClCompile Include="imgui_node_editor.cpp" />
+    <ClCompile Include="imgui_node_editor_api.cpp" />
+  </ItemGroup>
+</Project>
